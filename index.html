@@ -1,0 +1,101 @@
+﻿<!DOCTYPE html>
+<html lang="hu">
+<head>
+    <meta charset="UTF-8">
+    <title>Interaktív Naptár - Heti nézettel és Keresővel</title>
+    <link href="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.10/index.global.min.css" rel="stylesheet">
+    <style>
+        body { font-family: 'Segoe UI', Arial, sans-serif; margin: 20px; background-color: #f9f9f9; }
+        #search-container { max-width: 1000px; margin: 0 auto 15px auto; }
+        #search-input { 
+            width: 100%; 
+            padding: 10px; 
+            border: 1px solid #ccc; 
+            border-radius: 5px; 
+            box-sizing: border-box;
+            font-size: 16px;
+        }
+        #calendar { max-width: 1000px; margin: 0 auto; background: white; padding: 10px; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
+        .fc-event { cursor: pointer; }
+    </style>
+</head>
+<body>
+
+    <div id="search-container">
+        <input type="text" id="search-input" placeholder="Keresés az események között...">
+    </div>
+
+    <div id="calendar"></div>
+
+    <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.10/index.global.min.js"></script>
+    
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const calendarEl = document.getElementById('calendar');
+            const searchInput = document.getElementById('search-input');
+
+            // Programok listája URL-el
+            const allEvents = [
+                { 
+                    title: 'Heti tervezés', 
+                    start: '2026-04-14T09:00:00', 
+                    url: 'https://pelda.hu/tervezes',
+                    color: '#27ae60'
+                },
+                { 
+                    title: 'Projekt megbeszélés', 
+                    start: '2026-04-15T14:00:00', 
+                    end: '2026-04-15T16:00:00',
+                    url: 'https://zoom.us/j/123',
+                    color: '#2980b9'
+                },
+                { 
+                    title: 'Közösségi Kemencenap', 
+                    start: '2026-04-18', 
+                    url: 'https://facebook.com/events/123',
+                    color: '#e67e22'
+                }
+            ];
+
+            const calendar = new FullCalendar.Calendar(calendarEl, {
+                initialView: 'dayGridMonth',
+                locale: 'hu',
+                // Itt adtuk hozzá a 'timeGridWeek' opciót a jobb oldalra
+                headerToolbar: {
+                    left: 'prev,next today',
+                    center: 'title',
+                    right: 'dayGridMonth,timeGridWeek,listMonth'
+                },
+                buttonText: {
+                    today: 'ma',
+                    month: 'hónap',
+                    week: 'hét',
+                    list: 'lista'
+                },
+                events: allEvents,
+                
+                // Kattintás kezelése
+                eventClick: function(info) {
+                    if (info.event.url) {
+                        info.jsEvent.preventDefault();
+                        window.open(info.event.url, "_blank");
+                    }
+                }
+            });
+
+            calendar.render();
+
+            // Kereső funkció
+            searchInput.addEventListener('input', function() {
+                const searchTerm = searchInput.value.toLowerCase();
+                const filteredEvents = allEvents.filter(event => 
+                    event.title.toLowerCase().includes(searchTerm)
+                );
+
+                calendar.removeAllEvents();
+                calendar.addEventSource(filteredEvents);
+            });
+        });
+    </script>
+</body>
+</html>
